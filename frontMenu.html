@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choix du Thème</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 350px;
+            margin: 120px auto; /* Centre le conteneur verticalement et horizontalement */
+            padding: 120px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 10px;
+            padding: 7px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 20px;
+            width: 200px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Choisis un thème</h1>
+        <ul>
+            <li class="agriculture"><button onclick="selectTheme('theme1')">Agriculture</button></li>
+            <li class="education"><button onclick="selectTheme('theme2')">Education</button></li>
+            <li class="animals"><button onclick="selectTheme('theme3')">Animals</button></li>
+            <li class="nature"><button onclick="selectTheme('theme1')">Nature</button></li>
+            <li class="sport"><button onclick="selectTheme('theme2')">Sport</button></li>
+            <li class="food"><button onclick="selectTheme('theme3')">Food</button></li>
+        </ul>
+    </div>
+
+    <script>
+        function selectTheme(theme) {
+            alert('Thème sélectionné : ' + theme);
+            // Vous pouvez rediriger l'utilisateur ou effectuer d'autres actions ici
+        }
+    </script>
+</body>
+</html>

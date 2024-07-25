@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page d'Accueil</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 350px;
+            margin: 120px auto; /* Centre le conteneur verticalement et horizontalement */
+            padding: 120px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        input[type="text"] {
+            padding: 10px;
+            margin: 10px 0;
+            width: calc(100% - 20px);
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 25%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            padding: 20px;
+            z-index: 1000;
+            width: 250px;
+            height: 100px;
+        }
+        .popup h2 {
+            margin-top: 0;
+            color: white
+        }
+        .popup p {
+            color: white
+        }
+        .progress-container {
+            margin-top: 20px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to GameJam Guys !</h1>
+        <form id="userForm">
+            <input type="text" id="username" placeholder="Enter your pseudo">
+            <button type="submit">Start Game</button>
+        </form>
+    </div>
+    <div class="popup" id="popup">
+        <h2>Getting started...</h2>
+        <div class="modal" id="modal">
+            <div class="modal-content">
+                <p id="modalText"></p>
+            </div>
+        </div>
+        <div class="progress-container">
+            <progress value="0" max="100"></progress>
+        </div>
+    </div>
+    <script>
+        document.getElementById('userForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Empêcher le formulaire de se soumettre
+            var username = document.getElementById('username').value;
+            if(username.trim() === '') {
+                alert('Please, enter your pseudo first');
+            } else {
+                var modal = document.getElementById('modal');
+                var modalText = document.getElementById('modalText');
+                modalText.textContent = 'Hello ' + username + '! start in 3s';
+                modal.style.display = 'block';
+                var popup = document.getElementById('popup');
+                var progressBar = popup.querySelector('progress');
+                popup.style.display = 'block';
+                var progress = 0;
+                var interval = setInterval(function() {
+                progress += 50;
+                progressBar.value = progress;
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    // Cacher le popup après 1 seconde supplémentaire
+                    setTimeout(function() {
+                        popup.style.display = 'none';
+                        window.location.href = 'frontMenu.html';
+                    }, 1000);
+                }
+            }, 500);
+            }
+        });
+    </script>
+</body>
+</html>

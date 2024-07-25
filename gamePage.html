@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrabble</title>
+    <style>
+         #container1 {
+            display: flex;
+            justify-content: space-between;
+            width: 490px;
+            height: 22px;
+
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            padding: 17px;
+            margin: 5px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .left,
+        .right {
+            display: flex;
+            flex-direction: column;
+        }
+        .right {
+            display: flex;
+            flex-direction: column;
+            margin-left: 250px;
+
+        }
+        #flips {
+            margin-left: 163px;
+            margin-top: -45px;
+        }
+        .left {
+            display: flex;
+            flex-direction: column;
+            margin-left: 10px;
+            margin-top: -32px;
+        }
+
+        .left span,
+        .right span {
+            margin-bottom: 2px;
+            font-size: 18px;
+        }
+
+        .left span:nth-child(2),
+        .right span:nth-child(2) {
+            color: #666;
+        }
+        .board {
+            display: flex;
+            justify-content: center;
+        }
+        .row {
+            display: flex;
+            justify-content: center;
+        }
+        .tile {
+            width: 130px; /* Ajuster la largeur */
+            height: 190px; /* Ajuster la hauteur */
+            border: 1px solid #ccc;
+            display: inline-block;
+            margin: 2px; /* Augmenter la marge pour un espacement entre les tuiles */
+            cursor: pointer;
+            background-size: cover;
+            background-size: contain; /* Redimensionner l'image pour s'adapter à la taille de la tuile */
+            background-repeat: no-repeat;
+        }
+        .progress-container {
+          display: flex;
+          align-items: center;
+          margin-left: -100px;
+        }
+
+        .progress-bar {
+          width: 200px; /* Largeur de la barre de progression */
+          height: 20px; /* Hauteur de la barre de progression */
+          background-color: #cccccc; /* Couleur de fond */
+          border-radius: 10px; /* Bord arrondi */
+          margin-right: 10px; /* Espacement entre la barre et le texte */
+          transition: width 0.5s ease-in-out;
+        }
+
+        .progress-bar.red {
+            background-color: red;
+        }
+
+        .progress {
+          height: 90%; /* Hauteur de la barre remplie */
+          background-color: #4CAF50; /* Couleur de la barre remplie */
+          border-radius: 10px; /* Bord arrondi */
+          width: 100%; /* La largeur initiale */
+        }
+
+        #temps-restant {
+          font-family: Arial, sans-serif;
+          margin-left: -15px;
+          margin-top: -20px
+        }
+        #temps {
+          font-family: Arial, sans-serif;
+          margin-left: -15px;
+          margin-top: -20px
+        }
+        .container2 {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .tile2 {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #ccc;
+            margin: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            padding: 1px;
+        }
+        .flipped {
+            transform: rotateY(180deg);
+        }
+
+    </style>
+</head>
+<body>
+    <div id="container1">
+        <h2>
+            <div class="left">
+                <span id="player">Player: Dimi</span>
+                <span id="level">Basic level</span>
+            </div>
+            <div class="right">
+                <span id="flips">Flips : 10</span>
+                <span id="time">
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress" id="progress"></div>
+                        </div>
+
+                    </div>
+                    <div id="temps-restant"> <span id="temps"></span></div>
+                </span>
+            </div>
+
+        </h2>
+    </div>
+    <div id="board">
+        <div class="row">
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+        </div>
+        <div class="row">
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+        </div>
+        <div class="row">
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+        </div>
+        <div class="row">
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+        </div>
+    </div>
+    <div class="container2">
+        <div class="tile2"></div>
+        <div class="tile2"></div>
+        <div class="tile2"></div>
+        <div class="tile2"></div>
+        <div class="tile2" ></div>
+        <div class="tile2"></div>
+        <div class="tile2"></div>
+        <div class="tile2"></div>
+    </div>
+
+    <script>
+        var container1 = document.getElementById("container1");
+        let timeIsUp = false;
+        const totalTime = 10;
+        let timeLeft = totalTime;
+        const progressBar = document.getElementById("progress");
+        const tempsSpan = document.getElementById("temps");
+
+        // Fonction pour mettre à jour la barre de progression et le temps restant
+        function updateProgressBar() {
+            const progressWidth = (timeLeft / totalTime) * 100;
+            progressBar.style.width = `${progressWidth}%`;
+            timeLeft--;
+            if (timeLeft>=0){
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                tempsSpan.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            }
+            if (timeLeft<0){
+                let timeIsUp = true;
+                tempsSpan.textContent = 'Time over'
+                tempsSpan.style.color = "red";
+                tempsSpan.style.fontSize = '16px';
+                container1.style.backgrounColor = 'red';
+
+            }
+            // Ajout de la classe 'red' lorsque le temps restant est inférieur ou égal à 15 secondes
+            if (timeLeft < 5) {
+                progressBar.classList.add('red');
+            } else {
+                // Suppression de la classe 'red' lorsque le temps restant est supérieur à 15 secondes
+                progressBar.classList.remove('red');
+            }
+
+            if (timeLeft < 0) {
+                progressBar.parentNode.style.display = 'none';
+                clearInterval(intervalId);
+            }
+        }
+
+        // Appel de la fonction pour mettre à jour la barre de progression toutes les secondes
+        const intervalId = setInterval(updateProgressBar, 1000);
+
+
+        const tiles = document.querySelectorAll('.tile');
+        const backImage = 'images/backimg.png'; // Chemin de l'image de dos de carte
+
+        // Images pour les cartes de lettres
+        var carte = {};
+
+        carte["images/A-animal.png"] = 'A';
+        carte["images/B_animal.png"] = 'B';
+        carte["images/C_animal.png"] = 'C';
+        carte["images/D_animal.png"] = 'D';
+        carte["images/E_animal.png"] = 'E';
+        carte["images/F_animal.png"] = 'F';
+        carte["images/G_animal.png"] = 'G';
+        carte["images/H_animal.png"] = 'H';
+        carte["images/I_animal.png"] = 'I';
+        carte["images/J_animal.png"] = 'J';
+        carte["images/K_animal.png"] = 'K';
+        carte["images/L_animal.png"] = 'L';
+        carte["images/M_animal.png"] = 'M';
+        carte["images/O_animal.png"] = 'O';
+        carte["images/P_animal.png"] = 'P';
+        carte["images/Q_animal.png"] = 'Q';
+        carte["images/R_animal.png"] = 'R';
+        carte["images/S_animal.png"] = 'S';
+        carte["images/T_animal.png"] = 'T';
+        carte["images/U_animal.png"] = 'U';
+        carte["images/V_animal.png"] = 'V';
+        carte["images/W_animal.png"] = 'W';
+        carte["images/X_animal.png"] = 'X';
+        carte["images/Y_animal.png"] = 'Y';
+        carte["images/Z_animal.png"] = 'Z';
+        const images = [
+            'images/A-animal.png',
+            'images/B_animal.png',
+            'images/C_animal.png',
+            'images/D_animal.png',
+            'images/E_animal.png',
+            'images/F_animal.png',
+            'images/G_animal.png',
+            'images/H_animal.png',
+        ];
+
+        // Fonction pour inverser l'image d'une carte
+        function toggleTileImage(tile, image) {
+            if (tile.style.backgroundImage === `url("${backImage}")`) {
+                // Si l'image actuelle est le dos de la carte, afficher l'image réelle
+                tile.style.backgroundImage = `url(${image})`;
+            }
+        }
+
+        function showFrontImage(tile, image) {
+            tile.style.backgroundImage = `url(${image})`;
+            setTimeout(() => {
+                // Cacher à nouveau l'image de face après 1 seconde
+                tile.style.backgroundImage = `url(${backImage})`;
+            }, 500);
+        }
+
+        let timeoutId = null;
+        const flipsElement = document.getElementById('flips');
+        let flipsRestants = 10;
+
+        // Associer chaque carte à une image
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]]; // Échangez les éléments
+            }
+            return array;
+        }
+
+        // Mélanger les images
+        const shuffledImages = shuffleArray(images);
+        tiles.forEach((tile, index) => {
+            const image = images[index % images.length]; // Utilisation des images en boucle
+            tile.style.backgroundImage = `url(${backImage})`; // Afficher l'image de dos de la carte initialement
+
+            tile.addEventListener('click', () => {
+              // Si un délai est déjà en cours, annuler le délai
+              if (timeoutId !== null) {
+                clearTimeout(timeoutId);
+                timeoutId = null;
+              }
+              // Si le clic est simple (simple clic) et il reste des flips
+              if (flipsRestants > 0) {
+                timeoutId = setTimeout(() => {
+                  if (tile.style.backgroundImage === `url("${backImage}")`) {
+                    // Si l'image actuelle est le dos de la carte, afficher l'image réelle pendant 1 seconde
+                    showFrontImage(tile, image);
+                    flipsRestants--;
+                    flipsElement.textContent = `Flips : ${flipsRestants}`;
+                  }
+                  timeoutId = null;
+                }, 500); // Attendre 200 ms avant de déclencher l'action
+              }
+
+            });
+
+
+            tile.addEventListener('dblclick', () => {
+                // Si un délai est déjà en cours, annuler le délai
+                if (timeoutId !== null) {
+                    clearTimeout(timeoutId);
+                    timeoutId = null;
+                }
+
+                // Si le clic est un double clic
+                toggleTileImage(tile, image);
+                let currentCaseIndex = 0;
+                const letter = carte[image]; // Trouver la lettre correspondante dans le dictionnaire
+                // Si la lettre est définie, afficher la lettre dans la case suivante
+                if (letter !== undefined) {
+                    const cases = document.querySelectorAll('.tile2');
+                    // Trouver la prochaine case vide à partir de l'index actuel
+                    while (currentCaseIndex < cases.length && cases[currentCaseIndex].textContent.trim() !== '') {
+                        currentCaseIndex++;
+                    }
+                    // Si on a trouvé une case vide, afficher la lettre et passer à la prochaine case
+                    if (currentCaseIndex < cases.length) {
+                        cases[currentCaseIndex].textContent = letter; // Afficher la lettre dans la case actuelle
+                        currentCaseIndex++; // Passer à la prochaine case
+                    }
+                    if (areAllTilesFilled()) {
+                        compareWord(); // Comparer le mot formé avec le mot spécifique
+                    }
+                }
+            });
+            function areAllTilesFilled() {
+                const cases = document.querySelectorAll('.tile2');
+                for (let i = 0; i < cases.length; i++) {
+                    if (!cases[i].textContent.trim()) {
+                        return false; // Retourne faux si une case est vide
+                    }
+                }
+                return true; // Retourne vrai si toutes les cases sont remplies
+            }
+
+            function compareWord() {
+                const formedWord = Array.from(document.querySelectorAll('.tile2')).map(tile => tile.textContent.trim()).join('');
+                const specificWord = 'AAAAA'; // Remplacez par votre mot spécifique
+                if (formedWord === specificWord) {
+                    alert('Bravo ! Vous avez trouvé le mot spécifique.');
+                } else {
+                    alert('Le mot formé ne correspond pas au mot spécifique.');
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>
+
+
